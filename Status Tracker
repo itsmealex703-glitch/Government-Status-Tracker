@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New World Confederation – Status Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Roboto&display=swap" rel="stylesheet">
+<style>
+  body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #f0f2f5, #d9e2ec);
+    color: #333;
+  }
+
+  header {
+    text-align: center;
+    padding: 30px 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    color: #fff;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+  }
+
+  section {
+    padding: 30px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Summary Panel */
+  #summaryPanel {
+    display: flex;
+    justify-content: space-around;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    position: relative;
+    margin-bottom: 30px;
+  }
+
+  .summary-item {
+    text-align: center;
+    flex: 1;
+    padding: 0 10px;
+  }
+
+  .summary-item strong {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    color: #222;
+  }
+
+  .phase-light {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    margin: 0 5px;
+    box-shadow: 0 0 6px rgba(0,0,0,0.3);
+    transition: background 0.3s;
+  }
+
+  .alert {
+    position: absolute;
+    top: -15px;
+    right: 15px;
+    background: #ff4d4f;
+    color: #fff;
+    font-weight: 700;
+    padding: 10px 15px;
+    border-radius: 10px;
+    animation: flash 1s infinite;
+    display: none;
+  }
+
+  @keyframes flash {
+    0%,50%,100%{opacity:1;}
+    25%,75%{opacity:0.3;}
+  }
+
+  /* Table styling */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255,255,255,0.3);
+    backdrop-filter: blur(8px);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+
+  th, td {
+    padding: 15px;
+    text-align: left;
+    font-size: 0.95rem;
+    color: #222;
+  }
+
+  th {
+    background: rgba(255,255,255,0.4);
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  th:hover {
+    background: rgba(255,255,255,0.6);
+  }
+
+  tr:nth-child(even) { background: rgba(255,255,255,0.15); }
+  tr:hover { background: rgba(255,255,255,0.25); }
+
+  .status {
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    min-width: 80px;
+    text-align: center;
+    color: #fff;
+  }
+
+  .green { background: #28a745; }
+  .blue { background: #007bff; }
+  .red { background: #dc3545; }
+  .orange { background: #fd7e14; }
+  .purple { background: #6f42c1; }
+
+  .milestone-bar {
+    height: 18px;
+    border-radius: 10px;
+    transition: width 0.3s, background 0.3s;
+    margin-top: 6px;
+  }
+
+  tr.details { display: none; background: rgba(255,255,255,0.15); }
+  tr.details td { padding-left: 40px; font-size: 0.9rem; color: #333; }
+
+  .tooltip {
+    position: relative;
+    display: inline-block;
+  }
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 220px;
+    background-color: #333;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    margin-left: -110px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.85rem;
+  }
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  input[type=range] {
+    width: 60%;
+  }
+
+  output {
+    font-weight: 700;
+    margin-left: 5px;
+  }
+</style>
+</head>
+<body>
+
+<header>New World Confederation – Status Tracker</header>
+
+<section id="summaryPanel">
+  <div class="summary-item">
+    <strong>Overall Completion</strong>
+    <span id="overallCompletion">--%</span>
+  </div>
+  <div class="summary-item">
+    <strong>High-Risk Threats</strong>
+    <span id="highRiskCount">--</span>
+  </div>
+  <div class="summary-item">
+    <strong>Phase Status</strong><br>
+    <span class="phase-light" id="phase1"></span>
+    <span class="phase-light" id="phase2"></span>
+    <span class="phase-light" id="phase3"></span>
+    <span class="phase-light" id="phase4"></span>
+  </div>
+  <div class="alert" id="alertBox">⚠️ CRITICAL ALERT!</div>
+</section>
+
+<section>
+<h2>100-Day Operational Objectives</h2>
+<table id="objectivesTable">
+<thead>
+<tr>
+<th>Objective</th>
+<th>Phase</th>
+<th>Timeline</th>
+<th>Status</th>
+<th>Responsible Agency</th>
+</tr>
+</thead>
+<tbody>
+<!-- Sample Objectives (replicate for 20 with unique names) -->
+<tr onclick="toggleDetails(this)">
+<td>Neural Firewall v12.8 Deployment</td>
+<td>1</td>
+<td>Day 1–30</td>
+<td><span class="status blue">In Progress</span></td>
+<td>DHS / NSC</td>
+</tr>
+<tr class="details">
+<td colspan="5">
+<div class="tooltip"><strong>Details:</strong> Full federal neural-link rollout underway.
+<span class="tooltiptext">Ensure top-clearance personnel compliance. Monitor anomalies.</span></div><br>
+<strong>Completion:</strong>
+<input type="range" min="0" max="100" value="50" oninput="updateProgress(this, 'bar1')">
+<output>50</output>%
+<div id="bar1" class="milestone-bar" style="width:50%; background: linear-gradient(90deg,#007bff,#00c8ff);"></div>
+</td>
+</tr>
+
+<tr onclick="toggleDetails(this)">
+<td>Quantum Cartel Disruption</td>
+<td>1</td>
+<td>Day 1–30</td>
+<td><span class="status orange">In Progress</span></td>
+<td>NSC / DHS</td>
+</tr>
+<tr class="details">
+<td colspan="5">
+<div class="tooltip"><strong>Details:</strong> Task force operations ongoing.
+<span class="tooltiptext">Target: 9% quantum compute cycles.</span></div><br>
+<strong>Completion:</strong>
+<input type="range" min="0" max="100" value="35" oninput="updateProgress(this, 'bar2')">
+<output>35</output>%
+<div id="bar2" class="milestone-bar" style="width:35%; background: linear-gradient(90deg,#fd7e14,#ffbf47);"></div>
+</td>
+</tr>
+
+<!-- Add remaining 18 objectives following same structure -->
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>Risk Matrix</h2>
+<table id="riskTable">
+<thead>
+<tr>
+<th>Threat Area</th>
+<th>Risk Level</th>
+<th>Action Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Climate Migration Surge</td>
+<td class="status red">High</td>
+<td>Expand corridors +30%</td>
+</tr>
+<tr>
+<td>Quantum Data Syndicates</td>
+<td class="status red">High</td>
+<td>Intensify cyber interdiction</td>
+</tr>
+<tr>
+<td>Neural-Link Exploits</td>
+<td class="status orange">Medium</td>
+<td>Dual-factor authentication</td>
+</tr>
+<tr>
+<td>Rogue AGI Clusters</td>
+<td class="status orange">Medium</td>
+<td>Accelerate AI treaty adoption</td>
+</tr>
+</tbody>
+</table>
+</section>
+
+<script>
+function toggleDetails(row){
+  const next = row.nextElementSibling;
+  if(next.classList.contains('details')){
+    next.style.display = next.style.display === 'table-row' ? 'none' : 'table-row';
+  }
+}
+
+function updateProgress(slider, barId){
+  const value = slider.value;
+  slider.nextElementSibling.value = value;
+  const bar = document.getElementById(barId);
+  let color = value>=80 ? '#28a745' : value>=50 ? '#007bff' : value>=25 ? '#fd7e14' : '#dc3545';
+  bar.style.width = value+'%';
+  bar.style.background = `linear-gradient(90deg, ${color}, #00c8ff)`;
+  updateSummary();
+}
+
+function updateSummary(){
+  const sliders = document.querySelectorAll('input[type="range"]');
+  const total = Array.from(sliders).reduce((a,b)=>a+parseInt(b.value),0);
+  const avg = sliders.length ? Math.round(total/sliders.length) : 0;
+  document.getElementById('overallCompletion').innerText = avg + '%';
+
+  const highRisk = document.querySelectorAll('#riskTable .status.red').length;
+  document.getElementById('highRiskCount').innerText = highRisk;
+
+  const phases = [1,2,3,4];
+  phases.forEach(p=>{
+    const phaseSliders = Array.from(sliders).filter((s,i)=>{
+      const phaseCell = document.querySelectorAll('#objectivesTable tbody tr:nth-child('+(i*2+1)+') td:nth-child(2)')[0];
+      return phaseCell && parseInt(phaseCell.innerText)===p;
+    });
+    const phaseAvg = phaseSliders.length ? phaseSliders.reduce((a,b)=>a+parseInt(b.value),0)/phaseSliders.length : 0;
+    const light = document.getElementById('phase'+p);
+    light.style.background = phaseAvg>=80 ? '#28a745' : phaseAvg>=50 ? '#007bff' : phaseAvg>=25 ? '#fd7e14' : '#dc3545';
+  });
+
+  const alertBox = document.getElementById('alertBox');
+  const critical = Array.from(sliders).some(s=>parseInt(s.value)<25);
+  alertBox.style.display = critical ? 'block' : 'none';
+}
+
+window.onload = updateSummary;
+</script>
+
+</body>
+</html>
+
